@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>3-топ – Үдеу. Динамиканың виртуалды зертханасы</title>
+<style>
+:root{--n:#06223f;--n2:#0b3560;--c:#4fc3f7;--c2:#b3e5fc;--w:#fff;--ok:#6ee7a8;--bad:#ff8a80}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Segoe UI",Roboto,Arial,sans-serif;background:var(--n);color:var(--w);line-height:1.5}
+header{padding:18px 16px 10px;text-align:center;background:linear-gradient(var(--n2),var(--n))}
+h1{margin:0;font-size:clamp(1.3rem,4vw,2rem)}header p{margin:4px 0 0;color:var(--c2)}
+nav{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;padding:10px;position:sticky;top:0;background:var(--n);z-index:5}
+nav button,.btn{font:inherit;border:1px solid var(--c);background:transparent;color:var(--w);padding:8px 14px;border-radius:8px;cursor:pointer}
+nav button.on,.btn.p{background:var(--c);color:var(--n);font-weight:700}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #fff;outline-offset:2px}
+main{max-width:1000px;margin:auto;padding:0 12px 40px}
+section{display:none}section.on{display:block}
+.card{background:var(--n2);border:1px solid #1d5a94;border-radius:12px;padding:14px;margin:12px 0}
+canvas{width:100%;height:auto;display:block;border-radius:10px;background:#0a2d52}
+.formula{font-size:clamp(1.4rem,5vw,2.2rem);font-weight:700;text-align:center;color:var(--c2);margin:6px 0}
+.ctl{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px}
+label{display:block;font-size:.95rem}input[type=range]{width:100%;accent-color:var(--c)}
+b.v{color:var(--c)}
+.row{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px}
+table{width:100%;border-collapse:collapse}td,th{border:1px solid #1d5a94;padding:6px;text-align:center}
+th{background:#0d416f}td.ok{color:var(--ok);font-weight:700}
+.msg{padding:10px;border-radius:8px;background:#0d416f;margin-top:8px}.msg.ok{background:#14532d}.msg.bad{background:#7f1d1d}
+input[type=number],select{font:inherit;padding:8px;border-radius:8px;border:1px solid var(--c);background:#fff;color:var(--n);max-width:100%}
+.q{margin:12px 0}
+@media print{nav,header,.noprint{display:none}body{background:#fff;color:#000}.card{background:#fff;color:#000;border-color:#000}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<header><h1>3-топ – Үдеу. Динамиканың виртуалды зертханасы</h1><p>Ньютонның екінші заңы: күш, масса және үдеу арасындағы байланыс</p></header>
+<nav id="nav"></nav>
+<main>
+<section id="s1"><div class="card"><div class="formula">a = F / m</div>
+<canvas id="c1" width="900" height="300"></canvas>
+<div class="ctl"><label>Масса: <b class="v">1000 кг</b> (тұрақты)</label><label>Күш F: <b class="v" id="f1v"></b><input id="f1" type="range" min="100" max="1000" step="100" value="100"></label></div>
+<div class="msg" id="r1"></div>
+<div class="row"><button class="btn p" data-go="1">Бастау</button><button class="btn" data-stop="1">Тоқтату</button><button class="btn" data-reset="1">Қайта бастау</button><button class="btn p" id="rec1">Өлшемді кестеге жазу</button></div></div>
+<div class="two"><div class="card"><h3>Тәжірибе кестесі</h3><table id="t1"></table><p id="h1"></p></div><div class="card"><h3>Үдеу – күш графигі</h3><canvas id="g1" width="450" height="320"></canvas></div></div></section>
+
+<section id="s2"><div class="card"><div class="formula">a = F / m</div>
+<canvas id="c2" width="900" height="300"></canvas>
+<div class="ctl"><label>Күш F: <b class="v">500 Н</b> (тұрақты)</label><label>Масса m: <b class="v" id="m2v"></b><input id="m2" type="range" min="100" max="1000" step="100" value="1000"></label></div>
+<div class="msg" id="r2"></div>
+<div class="row"><button class="btn p" data-go="2">Бастау</button><button class="btn" data-stop="2">Тоқтату</button><button class="btn" data-reset="2">Қайта бастау</button><button class="btn p" id="rec2">Өлшемді кестеге жазу</button></div></div>
+<div class="two"><div class="card"><h3>Тәжірибе кестесі</h3><table id="t2"></table><p id="h2"></p></div><div class="card"><h3>Үдеу – масса графигі</h3><canvas id="g2" width="450" height="320"></canvas></div></div></section>
+
+<section id="s3"><div class="card"><div class="formula">Ox: Fтарту − Fүйкеліс = m·aₓ &nbsp; Oy: N − mg = m·aᵧ</div>
+<canvas id="c3" width="900" height="340"></canvas>
+<div class="ctl">
+<label>Fтарту: <b class="v" id="a3v"></b><input id="a3" type="range" min="0" max="1000" step="100" value="300"></label>
+<label>Fүйкеліс: <b class="v" id="b3v"></b><input id="b3" type="range" min="0" max="1000" step="100" value="100"></label>
+<label>N: <b class="v" id="n3v"></b><input id="n3" type="range" min="0" max="10000" step="500" value="5000"></label>
+<label>mg: <b class="v" id="g3v"></b><input id="g3" type="range" min="0" max="10000" step="500" value="5000"></label></div>
+<p>Автомобильдің массасы m = 500 кг (g = 10 м/с²).</p>
+<div class="msg" id="r3"></div>
+<div class="row"><button class="btn p" data-go="3">Бастау</button><button class="btn" data-stop="3">Тоқтату</button><button class="btn" data-reset="3">Қайта бастау</button><button class="btn p" id="spec">Арнайы тәжірибе (3.19-сурет)</button></div></div></section>
+
+<section id="s4"><div class="card"><h3>Есеп</h3><p>Автомобильдің массасы 1000 кг. Оған 2000 Н теңәрекетті күш әсер етеді. Автомобильдің үдеуін анықтаңдар.</p>
+<label>Жауабы (м/с²): <input id="ans" type="number" step="any"></label>
+<div class="row"><button class="btn p" id="chk">Тексеру</button></div><div class="msg" id="r4" hidden></div></div></section>
+
+<section id="s5"><div class="card"><h3>Зерттеу қорытындысы</h3><div id="qs"></div>
+<div class="row"><button class="btn p" id="fin">Зерттеу жұмысын аяқтау</button></div></div></section>
+
+<section id="s6"><div class="card" id="rep"><p>Есепті көру үшін «Қорытынды» бөлімінде «Зерттеу жұмысын аяқтау» батырмасын басыңыз.</p></div></section>
+</main>
+<script>
+const $=id=>document.getElementById(id), fm=(n,d=2)=>(+n).toFixed(d).replace('.',',');
+const tabs=['1-зерттеу: күш','2-зерттеу: масса','3-зерттеу: проекция','Есеп','Қорытынды','Есеп беру'];
+let cur=1;
+tabs.forEach((t,i)=>{const b=document.createElement('button');b.textContent=t;b.onclick=()=>show(i+1);$('nav').appendChild(b)});
+function show(k){cur=k;document.querySelectorAll('section').forEach((s,i)=>s.classList.toggle('on',i+1==k));[...$('nav').children].forEach((b,i)=>b.classList.toggle('on',i+1==k));upd()}
+const S={1:{x:0,v:0,t:0,run:0},2:{x:0,v:0,t:0,run:0},3:{x:0,v:0,t:0,run:0}};
+const L1=[100,200,300,400,500],L2=[100,200,400,600,1000],rec={1:{},2:{}};
+const flag={e3:false,p:false};
+function P(k){if(k==1)return{m:1000,F:+$('f1').value};if(k==2)return{m:+$('m2').value,F:500};
+ return{m:500,Ft:+$('a3').value,Fu:+$('b3').value,N:+$('n3').value,W:+$('g3').value}}
+function acc(k){const p=P(k);return k==3?[(p.Ft-p.Fu)/p.m,(p.N-p.W)/p.m]:[p.F/p.m,0]}
+function arrow(c,x1,y1,x2,y2,col,lab){c.strokeStyle=c.fillStyle=col;c.lineWidth=4;c.beginPath();c.moveTo(x1,y1);c.lineTo(x2,y2);c.stroke();
+ const a=Math.atan2(y2-y1,x2-x1);if(Math.hypot(x2-x1,y2-y1)>3){c.beginPath();c.moveTo(x2,y2);c.lineTo(x2-14*Math.cos(a-.4),y2-14*Math.sin(a-.4));c.lineTo(x2-14*Math.cos(a+.4),y2-14*Math.sin(a+.4));c.fill()}
+ c.font='bold 17px Segoe UI,Arial';c.fillText(lab,x2+(x2>=x1?6:-70),y2-8)}
+function car(c,cx,gy,ang){c.fillStyle='#e8f6ff';c.beginPath();c.roundRect(cx-80,gy-62,160,34,8);c.fill();
+ c.fillStyle='#4fc3f7';c.beginPath();c.moveTo(cx-40,gy-62);c.lineTo(cx-22,gy-92);c.lineTo(cx+34,gy-92);c.lineTo(cx+56,gy-62);c.fill();
+ c.fillStyle='#06223f';c.fillRect(cx-18,gy-86,20,20);c.fillRect(cx+8,gy-86,20,20);
+ [-48,48].forEach(o=>{c.save();c.translate(cx+o,gy-20);c.rotate(ang);c.fillStyle='#111';c.beginPath();c.arc(0,0,20,0,7);c.fill();c.strokeStyle='#b3e5fc';c.lineWidth=3;c.beginPath();c.moveTo(-16,0);c.lineTo(16,0);c.moveTo(0,-16);c.lineTo(0,16);c.stroke();c.restore()})}
+function scene(k){const c=$('c'+k).getContext('2d'),W=900,H=$('c'+k).height,s=S[k],p=P(k),gy=H-70,cx=450;
+ c.clearRect(0,0,W,H);const g=c.createLinearGradient(0,0,0,H);g.addColorStop(0,'#0b3560');g.addColorStop(1,'#1b6aa8');c.fillStyle=g;c.fillRect(0,0,W,H);
+ c.fillStyle='#233b52';c.fillRect(0,gy,W,70);c.fillStyle='#e8f6ff';const off=((-s.x*20)%90+90)%90;for(let x=off-90;x<W;x+=90)c.fillRect(x,gy+32,50,5);
+ car(c,cx,gy,s.x/.35*1);
+ c.fillStyle='#b3e5fc';c.font='15px Segoe UI,Arial';c.fillText('v = '+fm(s.v)+' м/с   t = '+fm(s.t,1)+' с',14,24);
+ if(k<3){ // динамометр
+  const f=p.F;c.fillStyle='#fff';c.fillRect(cx+80,gy-52,60,12);c.strokeStyle='#4fc3f7';c.lineWidth=2;c.strokeRect(cx+80,gy-52,60,12);
+  c.fillStyle='#4fc3f7';c.fillRect(cx+80,gy-52,60*f/1000,12);c.fillStyle='#fff';c.font='13px Segoe UI';c.fillText('динамометр',cx+80,gy-58);
+  arrow(c,cx+140,gy-46,cx+140+f/1000*220,gy-46,'#ffd54f','F = '+f+' Н');
+ }else{const m=.08;arrow(c,cx+80,gy-45,cx+80+p.Ft*m,gy-45,'#ffd54f','Fтарту '+p.Ft);arrow(c,cx-80,gy-45,cx-80-p.Fu*m,gy-45,'#ff8a80','Fүйк '+p.Fu);
+  const n=.018;arrow(c,cx,gy-95,cx,gy-95-p.N*n,'#6ee7a8','N '+p.N);arrow(c,cx+60,gy-30,cx+60,gy-30+p.W*n*.45,'#ce93d8','mg '+p.W)}}
+function graph(cv,pts,xl,yl,xmax,ymax){const c=cv.getContext('2d'),W=cv.width,H=cv.height,l=55,b=H-45,t=15,r=W-15;
+ c.clearRect(0,0,W,H);c.fillStyle=cv.dataset.bg||'#0a2d52';c.fillRect(0,0,W,H);const dk=cv.dataset.dk,fg=dk?'#000':'#b3e5fc';
+ c.strokeStyle=fg;c.fillStyle=fg;c.lineWidth=1.5;c.font='12px Segoe UI,Arial';c.beginPath();c.moveTo(l,t);c.lineTo(l,b);c.lineTo(r,b);c.stroke();
+ const X=x=>l+(r-l)*x/xmax,Y=y=>b-(b-t)*y/ymax;
+ for(let i=0;i<=5;i++){const x=xmax*i/5,y=ymax*i/5;c.fillText(fm(x,0),X(x)-10,b+16);c.fillText(fm(y,1),8,Y(y)+4);c.strokeStyle=dk?'#ccc':'#1d5a94';c.beginPath();c.moveTo(l,Y(y));c.lineTo(r,Y(y));c.stroke()}
+ c.fillStyle=fg;c.fillText(xl,r-90,H-8);c.fillText(yl,l+6,t+8);
+ pts.sort((a,b)=>a[0]-b[0]);c.strokeStyle='#ffd54f';c.lineWidth=2.5;c.beginPath();pts.forEach((q,i)=>i?c.lineTo(X(q[0]),Y(q[1])):c.moveTo(X(q[0]),Y(q[1])));c.stroke();
+ c.fillStyle=dk?'#c00':'#ff8a80';pts.forEach(q=>{c.beginPath();c.arc(X(q[0]),Y(q[1]),5,0,7);c.fill()})}
+function pts(k){return Object.entries(rec[k]).map(([a,b])=>[+a,b])}
+function table(k){const L=k==1?L1:L2,u=k==1?'Күш (Н)':'Масса (кг)',tb=$('t'+k);
+ tb.innerHTML='<tr><th>'+u+'</th><th>Үдеу (м/с²)</th></tr>'+L.map(v=>'<tr><td>'+v+'</td><td'+(rec[k][v]!=null?' class="ok">'+fm(rec[k][v]):'>—')+'</td></tr>').join('');
+ graph($('g'+k),pts(k),k==1?'F, Н':'m, кг','a, м/с²',k==1?1000:1000,k==1?1:5)}
+function upd(){
+ $('f1v').textContent=$('f1').value+' Н';$('m2v').textContent=$('m2').value+' кг';
+ const p1=P(1),p2=P(2),p3=P(3);
+ $('r1').innerHTML='a = F/m = '+p1.F+' / 1000 = <b class="v">'+fm(p1.F/1000)+' м/с²</b>. Күш артқанда үдеу де артады.';
+ $('r2').innerHTML='a = F/m = 500 / '+p2.m+' = <b class="v">'+fm(500/p2.m)+' м/с²</b>. Масса артқанда үдеу азаяды.';
+ $('a3v').textContent=p3.Ft+' Н';$('b3v').textContent=p3.Fu+' Н';$('n3v').textContent=p3.N+' Н';$('g3v').textContent=p3.W+' Н';
+ const rx=p3.Ft-p3.Fu,ry=p3.N-p3.W,[ax,ay]=acc(3);
+ $('r3').className='msg'+(rx==0&&ry==0?' ok':'');
+ $('r3').innerHTML='Ox: '+p3.Ft+' − '+p3.Fu+' = '+rx+' Н = m·aₓ → aₓ = <b>'+fm(ax)+' м/с²</b><br>Oy: '+p3.N+' − '+p3.W+' = '+ry+' Н = m·aᵧ → aᵧ = <b>'+fm(ay)+' м/с²</b>'+(rx==0&&ry==0?'<br><b>Теңәрекетті күш нөлге тең. Дененің үдеуі нөлге тең</b>':'');
+ if(p3.Ft==500&&p3.Fu==500&&p3.N==5000&&p3.W==5000)flag.e3=true;
+ table(1);table(2);$('h1').textContent=Object.keys(rec[1]).length+' / 5 өлшем жазылды';$('h2').textContent=Object.keys(rec[2]).length+' / 5 өлшем жазылды'}
+['f1','m2','a3','b3','n3','g3'].forEach(i=>$(i).oninput=()=>{upd();[1,2,3].forEach(scene)});
+document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>S[b.dataset.go].run=1);
+document.querySelectorAll('[data-stop]').forEach(b=>b.onclick=()=>S[b.dataset.stop].run=0);
+document.querySelectorAll('[data-reset]').forEach(b=>b.onclick=()=>{S[b.dataset.reset]={x:0,v:0,t:0,run:0};scene(b.dataset.reset)});
+function recd(k){const p=P(k),v=k==1?p.F:p.m,L=k==1?L1:L2,h=$('h'+k);
+ if(!L.includes(v)){h.textContent='Кестедегі мәндерді таңдаңыз: '+L.join(', ');return}
+ rec[k][v]=p.F/p.m;upd()}
+$('rec1').onclick=()=>recd(1);$('rec2').onclick=()=>recd(2);
+$('spec').onclick=()=>{$('a3').value=500;$('b3').value=500;$('n3').value=5000;$('g3').value=5000;S[3]={x:0,v:0,t:0,run:1};upd()};
+$('chk').onclick=()=>{const v=parseFloat($('ans').value),m=$('r4');m.hidden=false;
+ if(isNaN(v)){m.className='msg bad';m.textContent='Жауапты сан түрінде енгізіңіз.';return}
+ if(Math.abs(v-2)<.01){flag.p=true;m.className='msg ok';m.textContent='Дұрыс! a = F/m = 2000 Н / 1000 кг = 2 м/с².'}
+ else{m.className='msg bad';m.textContent=Math.abs(v-2000)<1?'Күшті массаға көбейтіп жібердіңіз. Заң бойынша a = F/m, яғни күшті массаға бөлу керек.':Math.abs(v-.5)<.01?'Массаны күшке бөлдіңіз. Үдеу күшке тура, массаға кері пропорционал: a = F/m.':'Қате. Формуласы a = F/m. Берілгені: F = 2000 Н, m = 1000 кг. Мәндерді қойып, қайта есептеңіз.'}};
+const Q=[['Күш артқан сайын үдеу қалай өзгереді?',['артады','азаяды','өзгермейді'],0],
+['Масса артқан сайын үдеу қалай өзгереді?',['артады','азаяды','өзгермейді'],1],
+['Неліктен теңәрекетті күш нөл болса, үдеу де нөлге тең болады?',['Себебі a = F/m, F = 0 болса, a = 0','Себебі масса нөлге тең болады','Себебі дене әрқашан тыныштықта тұрады'],0],
+['Ньютонның екінші заңының физикалық мағынасы қандай?',['Үдеу күшке тура, массаға кері пропорционал','Үдеу массаға тура пропорционал','Күш пен масса әрқашан тең'],0]];
+$('qs').innerHTML=Q.map((q,i)=>'<div class="q"><b>'+(i+1)+'. '+q[0]+'</b><br><select id="q'+i+'"><option value="">— таңдаңыз —</option>'+q[1].map((o,j)=>'<option value="'+j+'">'+o+'</option>').join('')+'</select></div>').join('');
+$('fin').onclick=()=>{let sc=0,rows='';
+ const n1=Object.keys(rec[1]).length,n2=Object.keys(rec[2]).length;
+ sc+=n1*3+n2*3+(flag.e3?15:0)+(flag.p?15:0);
+ const ans=Q.map((q,i)=>{const v=$('q'+i).value,ok=v!==''&&+v==q[2];if(ok)sc+=10;return '<li>'+q[0]+' <b>'+(v===''?'жауап берілмеді':q[1][+v])+'</b> '+(ok?'✓':'✗ (дұрысы: '+q[1][q[2]]+')')+'</li>'}).join('');
+ const T=k=>'<table><tr><th>'+(k==1?'Күш (Н)':'Масса (кг)')+'</th><th>Үдеу (м/с²)</th></tr>'+(k==1?L1:L2).map(v=>'<tr><td>'+v+'</td><td>'+(rec[k][v]!=null?fm(rec[k][v]):'—')+'</td></tr>').join('')+'</table>';
+ $('rep').innerHTML='<h2>Зерттеу жұмысының есебі</h2><div class="formula">Нәтиже: '+sc+' / 100 балл</div><div class="two"><div><h3>1-зерттеу</h3>'+T(1)+'<canvas id="rg1" width="450" height="320" data-dk="1" data-bg="#fff"></canvas></div><div><h3>2-зерттеу</h3>'+T(2)+'<canvas id="rg2" width="450" height="320" data-dk="1" data-bg="#fff"></canvas></div></div>'
+ +'<p>3-зерттеу (Fтарту = Fүйкеліс = 500 Н, N = mg = 5000 Н): '+(flag.e3?'орындалды ✓':'орындалмады ✗')+'</p><p>Есеп (a = 2 м/с²): '+(flag.p?'дұрыс ✓':'шешілмеді ✗')+'</p><h3>Қорытынды</h3><ol>'+ans+'</ol><div class="row noprint"><button class="btn p" onclick="print()">Басып шығару</button></div>';
+ graph($('rg1'),pts(1),'F, Н','a, м/с²',1000,1);graph($('rg2'),pts(2),'m, кг','a, м/с²',1000,5);show(6)};
+let last=performance.now();
+function loop(now){const dt=Math.min((now-last)/1000,.05);last=now;
+ [1,2,3].forEach(k=>{const s=S[k];if(s.run&&cur==k){const a=acc(k)[0];s.v=Math.max(0,s.v+a*dt);s.x+=s.v*dt;s.t+=dt}});
+ if(cur<=3)scene(cur);requestAnimationFrame(loop)}
+show(1);[1,2,3].forEach(scene);requestAnimationFrame(loop);
+</script>
+</body>
+</html>
